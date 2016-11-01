@@ -3,6 +3,7 @@ package cn.appleye.flexiblelistview;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -17,7 +18,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private static final int MAX_Y_OVERSCROLL_DISTANCE = 100;
 
     private Context mContext;
-    
+
     /**实际可上下拉动Y轴上的距离*/
     private int mMaxYOverscrollDistance;
 
