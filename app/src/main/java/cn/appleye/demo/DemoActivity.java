@@ -45,7 +45,7 @@ public class DemoActivity extends Activity {
         mAdapter = new DataAdapter();
         mFlexibleListView.setAdapter(mAdapter);
 
-        /*mFlexibleListView.setOnPullListener(new FlexibleListView.OnPullListener(){
+        mFlexibleListView.setOnPullListener(new FlexibleListView.OnPullListener(){
 
             @Override
             public void onPullDown() {
@@ -56,7 +56,7 @@ public class DemoActivity extends Activity {
             public void onPullUp() {
                 Log.d("xxxx", "[onPullUp]");
             }
-        });*/
+        });
     }
 
     /**

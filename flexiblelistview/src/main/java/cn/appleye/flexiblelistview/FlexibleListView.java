@@ -1,9 +1,9 @@
 package cn.appleye.flexiblelistview;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -34,6 +34,12 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     /**上拉和下拉监听事件*/
     private OnPullListener mPullListener;
 
+    private int mScrollY = 0;
+    private int mLastMotionY = 0;
+    private int mDeltaY = 0;
+    /**是否在进行动画*/
+    private boolean mIsAnimationRunning = false;
+
     public FlexibleListView(Context context){
         super(context);
         mContext = context;
@@ -60,12 +66,12 @@ public class FlexibleListView extends ListView implements OnTouchListener{
         mMaxYOverscrollDistance = (int) (density * MAX_Y_OVERSCROLL_DISTANCE);
     }
 
-    @Override
+    /*@Override
     protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
                                    int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
         //实现的本质就是在这里动态改变了maxOverScrollY的值
         return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
-    }
+    }*/
 
     /**
      * 覆盖父类的方法，设置OnTouchListener监听对象
@@ -83,11 +89,22 @@ public class FlexibleListView extends ListView implements OnTouchListener{
         mPullListener = listener;
     }
 
+    public void scrollTo(int x, int y) {
+        super.scrollTo(x, y);
+
+        mScrollY = y;
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         /*用户自定义的触摸监听对象消费了事件，则不执行下面的上拉和下拉功能*/
         if(mTouchListener!=null && mTouchListener.onTouch(v, event)) {
             return true;
+        }
+
+        /*在做动画的时候禁止滑动列表*/
+        if(mIsAnimationRunning) {
+            return false;
         }
 
         switch (event.getAction()){
@@ -100,6 +117,8 @@ public class FlexibleListView extends ListView implements OnTouchListener{
                     mStartCalc = false;
                     mCalcOnItemVisible = false;
                 }
+
+                mLastMotionY = (int)event.getY();
             }
             case MotionEvent.ACTION_MOVE:{
                 if(!mStartCalc && (getFirstVisiblePosition() == 0|| (getLastVisiblePosition() == getAdapter().getCount()-1))) {
@@ -107,16 +126,56 @@ public class FlexibleListView extends ListView implements OnTouchListener{
                     mCalcOnItemVisible = false;
                     mStartY = event.getY();
                 }
+
+                final int y = (int) event.getY();
+                mDeltaY = mLastMotionY - y;
+                mLastMotionY = y;
+
+                if(Math.abs(mScrollY) >= mMaxYOverscrollDistance) {
+                    if(mDeltaY * mScrollY > 0) {
+                        mDeltaY = 0;
+                    }
+                }
+
                 break;
             }
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:{
                 float distance = event.getY() - mStartY;
                 checkIfNeedRefresh(distance);
+
+                startBoundAnimate();
             }
         }
 
         return false;
+    }
+
+    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
+                                  boolean clampedY) {
+        if(mDeltaY == 0) {
+            return;
+        }
+        scrollBy(0, mDeltaY);
+    }
+
+    private void startBoundAnimate() {
+        mIsAnimationRunning = true;
+        final int scrollY = mScrollY;
+        ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(500);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                float fraction = animator.getAnimatedFraction();
+                scrollTo(0, scrollY - (int) (scrollY * fraction));
+
+                if((int)fraction == 1) {
+                    scrollTo(0, 0);
+                    mIsAnimationRunning = false;
+                }
+            }
+        });
+        animator.start();
     }
 
     /**
