@@ -10,8 +10,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ListView;
 
 /**
- * 弹性ListView。
- * 在http://blog.csdn.net/eastman520/article/details/19043973的基础上添加了上拉和下拉功能
+ * 弹性ListView，实现了上拉和下拉功能
  */
 public class FlexibleListView extends ListView implements OnTouchListener{
     /**初始可拉动Y轴方向距离*/
@@ -104,7 +103,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
 
         /*在做动画的时候禁止滑动列表*/
         if(mIsAnimationRunning) {
-            return false;
+            return true;//需要消费掉事件，否者会出现连续很快下拉或上拉无法回到初始位置的情况
         }
 
         switch (event.getAction()){
@@ -156,7 +155,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
         if(mDeltaY == 0) {
             return;
         }
-        scrollBy(0, mDeltaY);
+        scrollBy(0, mDeltaY/2);
     }
 
     private void startBoundAnimate() {
