@@ -165,7 +165,8 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private void startBoundAnimate() {
         mIsAnimationRunning = true;
         final int scrollY = mScrollY;
-        ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(500);
+        int time = Math.abs(500*scrollY/mMaxYOverscrollDistance);//设置为动态时间
+        ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(time);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
