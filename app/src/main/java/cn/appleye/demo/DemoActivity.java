@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import cn.appleye.flexiblelistview.FlexibleListView;
 
 public class DemoActivity extends Activity {
+    private static final String TAG = "DemoActivity";
 
     private FlexibleListView mFlexibleListView;
     private DataAdapter mAdapter;
@@ -49,12 +50,12 @@ public class DemoActivity extends Activity {
 
             @Override
             public void onPullDown() {
-                Log.d("xxxx", "[onPullDown]");
+                refreshData();
             }
 
             @Override
             public void onPullUp() {
-                Log.d("xxxx", "[onPullUp]");
+                loadMore();
             }
         });
     }
@@ -68,6 +69,44 @@ public class DemoActivity extends Activity {
         for(int i=0; i<COUNT_PER_BATCH; i++) {
             mDatas.add("this is item " + mPullOffset);
             mPullOffset++;
+        }
+    }
+
+    /**
+     * 下拉刷新
+     * */
+    private void refreshData() {
+        Log.d(TAG, "[refreshData]");
+        ArrayList<String> tempData = new ArrayList<String>();
+        mDownOffset = mDownOffset - COUNT_PER_BATCH;
+        for(int i=0; i<COUNT_PER_BATCH; i++) {
+            mDownOffset ++ ;
+            tempData.add("this is item " + mDownOffset);
+        }
+        mDownOffset = mDownOffset - COUNT_PER_BATCH;
+
+        tempData.addAll(mDatas);
+
+        mDatas.clear();
+        mDatas = tempData;
+
+        if(mAdapter != null){
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 加载更多
+     * */
+    private void loadMore() {
+        Log.d(TAG, "[loadMore]");
+        for(int i=0; i<COUNT_PER_BATCH; i++) {
+            mDatas.add("this is item " + mPullOffset);
+            mPullOffset++;
+        }
+
+        if(mAdapter != null){
+            mAdapter.notifyDataSetChanged();
         }
     }
 

@@ -38,6 +38,8 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private int mDeltaY = 0;
     /**是否在进行动画*/
     private boolean mIsAnimationRunning = false;
+    /**手指是否离开屏幕*/
+    private boolean mIsActionUp = false;
 
     public FlexibleListView(Context context){
         super(context);
@@ -108,6 +110,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
 
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:{
+                mIsActionUp = false;
                 if(getFirstVisiblePosition() == 0 || (getLastVisiblePosition() == getAdapter().getCount()-1)) {
                     mStartY = event.getY();
                     mStartCalc = true;
@@ -140,6 +143,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
             }
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:{
+                mIsActionUp = true;
                 float distance = event.getY() - mStartY;
                 checkIfNeedRefresh(distance);
 
@@ -152,7 +156,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
 
     protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX,
                                   boolean clampedY) {
-        if(mDeltaY == 0) {
+        if(mDeltaY == 0 || mIsActionUp) {
             return;
         }
         scrollBy(0, mDeltaY/2);
