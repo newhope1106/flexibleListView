@@ -14,12 +14,12 @@ import android.widget.ListView;
  */
 public class FlexibleListView extends ListView implements OnTouchListener{
     /**初始可拉动Y轴方向距离*/
-    private static final int MAX_Y_OVERSCROLL_DISTANCE = 100;
+    private static final int MAX_Y_OVER_SCROLL_DISTANCE = 100;
 
     private Context mContext;
 
     /**实际可上下拉动Y轴上的距离*/
-    private int mMaxYOverscrollDistance;
+    private int mMaxYOverScrollDistance;
 
     private float mStartY = -1;
     /**开始计算的时候，第一个或者最后一个item是否可见的*/
@@ -64,15 +64,8 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private void initBounceListView(){
         final DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         final float density = metrics.density;
-        mMaxYOverscrollDistance = (int) (density * MAX_Y_OVERSCROLL_DISTANCE);
+        mMaxYOverScrollDistance = (int) (density * MAX_Y_OVER_SCROLL_DISTANCE);
     }
-
-    /*@Override
-    protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
-                                   int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
-        //实现的本质就是在这里动态改变了maxOverScrollY的值
-        return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
-    }*/
 
     /**
      * 覆盖父类的方法，设置OnTouchListener监听对象
@@ -133,7 +126,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
                 mDeltaY = mLastMotionY - y;
                 mLastMotionY = y;
 
-                if(Math.abs(mScrollY) >= mMaxYOverscrollDistance) {
+                if(Math.abs(mScrollY) >= mMaxYOverScrollDistance) {
                     if(mDeltaY * mScrollY > 0) {
                         mDeltaY = 0;
                     }
@@ -165,7 +158,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private void startBoundAnimate() {
         mIsAnimationRunning = true;
         final int scrollY = mScrollY;
-        int time = Math.abs(500*scrollY/mMaxYOverscrollDistance);//设置为动态时间
+        int time = Math.abs(500*scrollY/mMaxYOverScrollDistance);//设置为动态时间
         ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(time);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -197,7 +190,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
             if(!mCalcOnItemVisible) {
                 realDistance = realDistance - view.getHeight();//第一个item的高度不计算在内容
             }
-            if(realDistance > mMaxYOverscrollDistance) {
+            if(realDistance > mMaxYOverScrollDistance) {
                 if(mPullListener != null){
                     mPullListener.onPullDown();
                 }
@@ -212,7 +205,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
             if(!mCalcOnItemVisible) {
                 realDistance = realDistance - view.getHeight();//最后一个item的高度不计算在内容
             }
-            if(realDistance > mMaxYOverscrollDistance) {
+            if(realDistance > mMaxYOverScrollDistance) {
                 if(mPullListener != null){
                     mPullListener.onPullUp();
                 }
