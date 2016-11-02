@@ -5,11 +5,8 @@
 - 实现了弹性效果
 - 实现了上拉和下拉功能
 - 使用非常简单
-<br>
 
-# 用法
-<br>
-
+## 用法
 ###1.首先在xml中定义好
 ```xml
 <cn.appleye.flexiblelistview.FlexibleListView
