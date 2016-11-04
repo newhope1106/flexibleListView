@@ -11,6 +11,7 @@ import android.widget.ListView;
 
 /**
  * 弹性ListView，实现了上拉和下拉功能
+ * @author liuliaopu 2016-11-02
  */
 public class FlexibleListView extends ListView implements OnTouchListener{
     /**初始可拉动Y轴方向距离*/
@@ -89,6 +90,32 @@ public class FlexibleListView extends ListView implements OnTouchListener{
         mScrollY = y;
     }
 
+    /**
+     * 在滑动的过程中onTouch的ACTION_DOWN事件可能丢失，在这里进行初始值设置
+     * */
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mIsActionUp = false;
+                resetStatus();
+                if(getFirstVisiblePosition() == 0 || (getLastVisiblePosition() == getAdapter().getCount()-1)) {
+                    mStartY = event.getY();
+                    mStartCalc = true;
+                    mCalcOnItemVisible = true;
+                }else{
+                    mStartCalc = false;
+                    mCalcOnItemVisible = false;
+                }
+
+                mLastMotionY = (int)event.getY();
+                break;
+            default:
+                break;
+        }
+        return super.onInterceptTouchEvent(event);
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         /*用户自定义的触摸监听对象消费了事件，则不执行下面的上拉和下拉功能*/
@@ -104,6 +131,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:{
                 mIsActionUp = false;
+                resetStatus();
                 if(getFirstVisiblePosition() == 0 || (getLastVisiblePosition() == getAdapter().getCount()-1)) {
                     mStartY = event.getY();
                     mStartCalc = true;
@@ -158,8 +186,8 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private void startBoundAnimate() {
         mIsAnimationRunning = true;
         final int scrollY = mScrollY;
-        int time = Math.abs(500*scrollY/mMaxYOverScrollDistance);//设置为动态时间
-        ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(time);
+        int time = Math.abs(500*scrollY/mMaxYOverScrollDistance);
+        ValueAnimator animator = ValueAnimator.ofInt(0,1).setDuration(time);//设置为动态时间
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
@@ -168,11 +196,17 @@ public class FlexibleListView extends ListView implements OnTouchListener{
 
                 if((int)fraction == 1) {
                     scrollTo(0, 0);
-                    mIsAnimationRunning = false;
+                    resetStatus();
                 }
             }
         });
         animator.start();
+    }
+
+    private void resetStatus() {
+        mIsAnimationRunning = false;
+        mStartCalc = false;
+        mCalcOnItemVisible = false;
     }
 
     /**
