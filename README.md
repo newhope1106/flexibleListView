@@ -30,6 +30,10 @@ mFlexibleListView.setOnPullListener(new FlexibleListView.OnPullListener(){
             }
         });
 ```
+###demo
+![gif](./screenshots/demo1.gif)
+![gif](./screenshots/demo2.gif)
+
 # About
 @Author : Liu Liaopu </br>
 @Website : https://github.com/newhope1106
