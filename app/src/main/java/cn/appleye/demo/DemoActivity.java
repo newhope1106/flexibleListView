@@ -29,7 +29,7 @@ public class DemoActivity extends Activity {
     /**上拉产生的数据偏移值*/
     private int mPullOffset = 0;
     /**初始位置*/
-    private int mStartPos = 100;
+    private int mStartPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
