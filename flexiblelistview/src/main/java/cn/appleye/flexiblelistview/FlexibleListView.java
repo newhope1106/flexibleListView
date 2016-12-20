@@ -214,6 +214,9 @@ public class FlexibleListView extends ListView implements OnTouchListener{
      * @param distance 滑动的距离
      * */
     private void checkIfNeedRefresh(float distance) {
+        if(getChildCount() == 0) {
+            return;
+        }
         if(distance > 0 && getFirstVisiblePosition() == 0) { //下拉
             View view = getChildAt(0);
             if(view == null) {

@@ -50,12 +50,12 @@ public class DemoActivity extends Activity {
 
             @Override
             public void onPullDown() {
-                refreshData();
+                //refreshData();
             }
 
             @Override
             public void onPullUp() {
-                loadMore();
+                //loadMore();
             }
         });
     }
