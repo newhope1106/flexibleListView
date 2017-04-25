@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -41,19 +42,20 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     private boolean mIsAnimationRunning = false;
     /**手指是否离开屏幕*/
     private boolean mIsActionUp = false;
+    /**是否支持显示下拉刷新loading*/
+    private boolean mEnableRefreshHeader = false;
+    /**是否支持加载更多loading*/
+    private boolean mEnableLoadingMoreHeader = false;
+
+    private View mDefaultRefreshViewHeader;
+    private View mDefaultLoadingMore;
 
     public FlexibleListView(Context context){
-        super(context);
-        mContext = context;
-        super.setOnTouchListener(this);
-        initBounceListView();
+        this(context, null);
     }
 
     public FlexibleListView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
-        super.setOnTouchListener(this);
-        initBounceListView();
+        this(context, attrs, -1);
     }
 
     public FlexibleListView(Context context, AttributeSet attrs, int defStyle) {
@@ -82,6 +84,26 @@ public class FlexibleListView extends ListView implements OnTouchListener{
      * */
     public void setOnPullListener(OnPullListener listener){
         mPullListener = listener;
+    }
+
+    /**
+     * 设置加载更多或刷新loading header
+     * @param enableRefreshHeader  下拉刷新header
+     * @param enableLoadingMoreHeader 加载更多动画
+     * */
+    public void setHeaderEnable(boolean enableRefreshHeader, boolean enableLoadingMoreHeader) {
+        mEnableRefreshHeader = enableRefreshHeader;
+        mEnableLoadingMoreHeader = enableLoadingMoreHeader;
+
+        if(mEnableRefreshHeader && mDefaultRefreshViewHeader == null) {
+            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mDefaultRefreshViewHeader = inflater.inflate(R.layout.loading_view, null);
+        }
+
+        if(enableLoadingMoreHeader && mDefaultRefreshViewHeader == null) {
+            LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mDefaultRefreshViewHeader = inflater.inflate(R.layout.loading_view, null);
+        }
     }
 
     public void scrollTo(int x, int y) {
