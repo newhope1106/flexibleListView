@@ -61,6 +61,7 @@ public class FlexibleListView extends ListView implements OnTouchListener{
     public FlexibleListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        super.setOnTouchListener(this);
         initBounceListView();
     }
 
@@ -100,9 +101,9 @@ public class FlexibleListView extends ListView implements OnTouchListener{
             mDefaultRefreshViewHeader = inflater.inflate(R.layout.loading_view, null);
         }
 
-        if(enableLoadingMoreHeader && mDefaultRefreshViewHeader == null) {
+        if(enableLoadingMoreHeader && mDefaultLoadingMore == null) {
             LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mDefaultRefreshViewHeader = inflater.inflate(R.layout.loading_view, null);
+            mDefaultLoadingMore = inflater.inflate(R.layout.loading_view, null);
         }
     }
 
